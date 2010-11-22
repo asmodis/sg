@@ -157,4 +157,58 @@ class TestSemigroupAdjoinOperations < MiniTest::Unit::TestCase
     assert_equal 'c', @s.zero
   end
 end
+class TestSemigroupIdeals < MiniTest::Unit::TestCase
+  include Sg
+  
+  def setup
+    @s1 = Semigroup.new [0,0,0,0,0,1,1,1,0,1,2,1,0,1,1,3], [0,1,2,3]
+    @s2 = Semigroup.new [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,1,2,3]
+    @s3 = Semigroup.new [0,0,2,2,1,1,3,3,0,0,2,2,1,1,3,3], [0,1,2,3]
+  end
 
+  def test_left_ideal
+    assert_equal Set[0], @s1.left_ideal(0)
+    assert_equal Set[0,1,2], @s1.left_ideal(2)
+    assert_equal Set[0,1,2], @s1.left_ideal(1,2)
+
+    assert_equal Set[0,2], @s2.left_ideal(2)
+    assert_equal Set[0,1,2], @s2.left_ideal(1,2)
+    
+    assert_equal Set[0,1], @s3.left_ideal(0)
+    assert_equal Set[2,3], @s3.left_ideal(2)
+    assert_equal Set[0,1,2,3], @s3.left_ideal(1,2)
+  end
+
+  def test_right_ideal
+    assert_equal Set[0], @s1.right_ideal(0)
+    assert_equal Set[0,1,2], @s1.right_ideal(2)
+    assert_equal Set[0,1,2], @s1.right_ideal(1,2)
+
+    assert_equal Set[0,2], @s2.right_ideal(2)
+    assert_equal Set[0,1,2], @s2.right_ideal(1,2)
+    
+    assert_equal Set[0,2], @s3.right_ideal(0)
+    assert_equal Set[0,2], @s3.right_ideal(2)
+    assert_equal Set[0,1,2,3], @s3.right_ideal(1,2)
+  end
+
+  def test_ideal
+    assert_equal Set[0], @s1.ideal(0)
+    assert_equal Set[0,1,2], @s1.ideal(2)
+    assert_equal Set[0,1,2], @s1.ideal(1,2)
+
+    assert_equal Set[0,2], @s2.ideal(2)
+    assert_equal Set[0,1,2], @s2.ideal(1,2)
+    
+    assert_equal Set[0,1,2,3], @s3.ideal(0)
+    assert_equal Set[0,1,2,3], @s3.ideal(2)
+    assert_equal Set[0,1,2,3], @s3.ideal(1,2)
+  end
+
+  def test_ideals_should_check_arguments
+    [:left_ideal, :right_ideal, :ideal].each do |type|
+      exception = assert_raises(ArgumentError) { @s1.send(type, 'xxx') }
+      assert_match(/unknown element/, exception.message)
+    end
+  end
+end
