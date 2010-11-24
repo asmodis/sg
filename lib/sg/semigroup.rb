@@ -1,7 +1,26 @@
 require "set"
 
 module Sg
+  module SemigroupHelper
+    def error(msg,type=ArgumentError)
+      raise ArgumentError, "Sg error: " + msg
+    end
+
+    def validate
+      error "Wrong number of given elements." if @order**2 != @table.size
+      error "Table contains unknown elements." if @table.any? { |x| x.nil? }
+
+      non_associative = @elements.product(@elements, @elements).find do |x,y,z|
+        self[self[x,y],z] != self[x,self[y,z]]
+      end
+      
+      error "Given table is not associative." if !!non_associative
+    end
+  end
+  
   class Semigroup
+    include SemigroupHelper
+    
     def initialize(table, elements)
       @elements = elements
       
@@ -11,46 +30,31 @@ module Sg
       @table = table.map { |x| @internal[x] }
       @order = @elements.size
 
-      #Validation
-      if @order**2 != @table.size
-        raise ArgumentError, "Sg error: wrong number of given elements."
-      end
-
-      if @table.any? { |x| x.nil? }
-        raise ArgumentError, "Sg error: Table contains unknown elements."
-      end
-
-      @elements.product(@elements, @elements).each do |x,y,z|
-        if self[self[x,y],z] != self[x,self[y,z]]
-          raise ArgumentError, "Sg error: Given table is not associative '(#{x}#{y})#{z} != #{x}(#{y}#{z})'."
-        end
-      end
+      validate            
     end
 
     attr_reader :elements, :order, :internal, :table
     
     def [](*args)
-      internal_args = args.map { |x| @internal[x] }
+      int_args = args.map { |x| @internal[x] }
 
-      if internal_args.any? { |x| x.nil? }
-        raise ArgumentError, "Sg error: Arglist contains unknown elements."
-      end
+      error "Arglist contains unknown elements." if int_args.any? { |x| x.nil? }
       
-      while internal_args.size > 1
-        x,y = internal_args[0,2]
+      while int_args.size > 1
+        x,y = int_args[0,2]
         result = @table[@order*x +y]
-        internal_args[0,2] = result
+        int_args[0,2] = result
       end
 
-      @elements[internal_args[0]]
+      @elements[int_args[0]]
     end
 
     def identity
-      @elements.find { |e| @elements.all? {|x| self[e,x] == x && self[x,e] == x } }
+      @elements.find {|e| @elements.all? {|x| [self[e,x], self[x,e]] == [x,x] }}
     end
 
     def zero
-      @elements.find { |n| @elements.all? {|x| self[n,x] == n && self[x,n] == n } }
+      @elements.find {|n| @elements.all? {|x| [self[n,x],self[x,n]] == [n,n] }}
     end
 
     def adjoin!(type, name = nil, force = false)

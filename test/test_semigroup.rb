@@ -29,7 +29,7 @@ class TestSemigroupCreation < SgTestCase
       Semigroup.new %w(a a a a a a a a a), %w(a b)
     end
 
-    assert_match(/wrong number/, exception.message)
+    assert_match(/[wW]rong number/, exception.message)
   end
 
   def test_check_elements_of_table_are_really_elements
