@@ -2,9 +2,11 @@ require File.absolute_path(File.join(File.dirname(__FILE__), "setup_testenv"))
 
 require "semigroup"
 
-class TestSemigroupCreation < MiniTest::Unit::TestCase
+class SgTestCase < MiniTest::Unit::TestCase
   include Sg
-  
+end
+
+class TestSemigroupCreation < SgTestCase  
   def test_instancevars_are_correctly_initialized
     s = Semigroup.new %w(a b c b c a c a b), %w(a b c)
 
@@ -39,9 +41,7 @@ class TestSemigroupCreation < MiniTest::Unit::TestCase
   end
 end
 
-class TestSemigroupMultiplication < MiniTest::Unit::TestCase
-  include Sg
-  
+class TestSemigroupMultiplication < SgTestCase  
   def setup
     @s = Semigroup.new %w(a b c b c a c a b), %w(a b c)
   end
@@ -64,9 +64,7 @@ class TestSemigroupMultiplication < MiniTest::Unit::TestCase
   end
 end
 
-class TestSemigroupSpecialElements < MiniTest::Unit::TestCase
-  include Sg
-  
+class TestSemigroupSpecialElements < SgTestCase  
   def setup
     @s = Semigroup.new  %w(a b c b c a c a b), %w(a b c)
     @t = Semigroup.new  %w(b b b b), %w(a b)
@@ -83,9 +81,7 @@ class TestSemigroupSpecialElements < MiniTest::Unit::TestCase
   end
 end
 
-class TestSemigroupAdjoinOperations < MiniTest::Unit::TestCase
-  include Sg
-
+class TestSemigroupAdjoinOperations < SgTestCase
   def setup
     @s = Semigroup.new  %w(b b b b), %w(a b)
     @t = Semigroup.new  %w(a b b a), %w(a b)
@@ -157,9 +153,8 @@ class TestSemigroupAdjoinOperations < MiniTest::Unit::TestCase
     assert_equal 'c', @s.zero
   end
 end
-class TestSemigroupIdeals < MiniTest::Unit::TestCase
-  include Sg
-  
+
+class TestSemigroupIdeals < SgTestCase  
   def setup
     @s1 = Semigroup.new [0,0,0,0,0,1,1,1,0,1,2,1,0,1,1,3], [0,1,2,3]
     @s2 = Semigroup.new [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,1,2,3]
@@ -213,9 +208,7 @@ class TestSemigroupIdeals < MiniTest::Unit::TestCase
   end
 end
 
-class TestSemigroupEquivalencesCongruences < MiniTest::Unit::TestCase
-  include Sg
-  
+class TestSemigroupEquivalencesCongruences < SgTestCase  
   def setup
     @s = Semigroup.new([1,1,1,4,5,1,2,2,4,5,1,3,3,4,5,4,4,4,5,1,5,5,5,1,4],
                        [1,2,3,4,5])
