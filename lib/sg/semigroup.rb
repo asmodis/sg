@@ -86,5 +86,37 @@ module Sg
     def ideal(*args)
       left_ideal(*args) | right_ideal(*args) | left_ideal(*right_ideal(*args))
     end
+   
+    def equivalence(*args)
+      result = args | args.map { |x,y| [y,x] } | @elements.map { |x| [x,x] }
+
+      finished = false
+
+      until finished
+        finished = true
+
+        new_tuples = []
+        result.each do |a,b|
+          new_tuples |= result.find_all { |x,y| x == b && !result.include?([a,y]) }.
+            map { |x,y| [a,y] }
+        end
+        
+        unless new_tuples.empty?
+          result |= new_tuples
+          finished = false
+        end
+      end
+
+      result.to_set
+    end
+
+    def congruence(*args)
+      result = []
+      args.each do |x,y|
+        result |= ideal(x).to_a.product ideal(y).to_a
+      end
+        
+      equivalence(*result)
+    end
   end
 end
