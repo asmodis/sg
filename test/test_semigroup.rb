@@ -212,3 +212,34 @@ class TestSemigroupIdeals < MiniTest::Unit::TestCase
     end
   end
 end
+
+class TestSemigroupEquivalencesCongruences < MiniTest::Unit::TestCase
+  include Sg
+  
+  def setup
+    @s = Semigroup.new([1,1,1,4,5,1,2,2,4,5,1,3,3,4,5,4,4,4,5,1,5,5,5,1,4],
+                       [1,2,3,4,5])
+  end
+
+  def test_equivalence
+    expected = Set[[1,4],[1,5],[4,1],[5,1],[4,5],[5,4],
+                   [1,1],[2,2],[3,3],[4,4],[5,5]]
+    assert_equal expected, @s.equivalence([1,4],[4,5])
+
+    expected = Set[[2,4],[4,2],[5,1],[1,5],
+                   [1,1],[2,2],[3,3],[4,4],[5,5]]
+    assert_equal expected, @s.equivalence([2,4],[1,5])
+  end
+
+  def test_congruence
+    expected = Set[[1,2],[1,3],[1,4],[1,5],[2,3],[2,4],[2,5],[3,4],[3,5],[4,5],
+                   [2,1],[3,1],[4,1],[5,1],[3,2],[4,2],[5,2],[4,3],[5,3],[5,4],
+                   [1,1],[2,2],[3,3],[4,4],[5,5]]
+    assert_equal expected, @s.congruence([2,4],[1,5])
+
+    expected = Set[[1,4],[1,5],[4,5],
+                   [4,1],[5,1],[5,4],
+                   [1,1],[2,2],[3,3],[4,4],[5,5]]
+    assert_equal expected, @s.congruence([4,5])
+  end
+end
